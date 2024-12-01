@@ -3,6 +3,7 @@ import json
 from django.http import JsonResponse
 from django.views.decorators.csrf import csrf_exempt
 from django.shortcuts import get_object_or_404
+from django.forms.models import model_to_dict
 
 from .models import Fruit, Vitamin
 
@@ -37,13 +38,9 @@ def fruit_view(request, pk = None, *args, **kwargs):
             vitamins = Vitamin.objects.using('default').filter(id__in = vitamin_ids)
             fruit.vitamins.set(vitamins, through_defaults = None)
             
-            data = {
-                "id": id,
-                "name": name,
-                "price": price,
-                "vitamins": [vitamin.name for vitamin in vitamins],
-                "image_url": fruit.image.url # getting the image url
-            }
+            data = model_to_dict(fruit)
+            data['image'] = fruit.image.url
+            data['vitamins'] = [{"id": v.id, "name": v.name} for v in fruit.vitamins.all()]
             return JsonResponse(data, status = 200)
 
         except Exception as e:
@@ -53,13 +50,9 @@ def fruit_view(request, pk = None, *args, **kwargs):
         if pk:
             try:
                 fruit = Fruit.objects.get(id = pk)
-                data = {
-                    "id": fruit.id,
-                    "name": fruit.name,
-                    "price": fruit.price,
-                    "vitamins": [vitamin.name for vitamin in fruit.vitamins.all()],
-                    "image": fruit.image.url, 
-                }
+                data = model_to_dict(fruit)
+                data['image'] = fruit.image.url
+                data['vitamins'] = [{"id": v.id, "name": v.name} for v in fruit.vitamins.all()]
                 return JsonResponse(data, safe = False ,status = 200)
             except Fruit.DoesNotExist:
                 return JsonResponse({"error": "Fruit not found"}, status = 404)
@@ -70,13 +63,10 @@ def fruit_view(request, pk = None, *args, **kwargs):
             fruits = Fruit.objects.all()
             data = []
             for fruit in fruits:
-                data.append({
-                    "id": fruit.id,
-                    "name": fruit.name,
-                    "price": fruit.price,
-                    "vitamins": [vitamin.name for vitamin in fruit.vitamins.all()],
-                    "image": fruit.image.url,
-                })
+                fruit_data = model_to_dict(fruit)
+                fruit_data['image'] = fruit.image.url
+                fruit_data['vitamins'] = [{"id": v.id, "name": v.name} for v in fruit.vitamins.all()]
+                data.append(fruit_data)
             return JsonResponse(data, safe = False ,status = 200)
         except Fruit.DoesNotExist:
             return JsonResponse({"error": "Fruit not found"}, status = 404)
@@ -113,13 +103,9 @@ def fruit_view(request, pk = None, *args, **kwargs):
                     vitamins = Vitamin.objects.using('default').filter(id__in = vitamin_ids)
                     fruit.vitamins.set(vitamins, through_defaults = None)
 
-                data = {
-                    "id": fruit.id,
-                    "name": fruit.name,
-                    "price": fruit.price,
-                    "vitamins": [vitamin.name for vitamin in fruit.vitamins.all()],
-                    "image_url": fruit.image.url 
-                }
+                data = model_to_dict(fruit)
+                data['image'] = fruit.image.url
+                data['vitamins'] = [{"id": v.id, "name": v.name} for v in fruit.vitamins.all()]
                 return JsonResponse(data, status = 200)
             except Exception as e:
                 return JsonResponse({"error": str(e)}, status = 400)
