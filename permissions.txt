@@ -1,0 +1,29 @@
+
+PERMISSIONS SETUP DETAILS
+-------------------------
+
+1. List Fruits (GET /fruits/):
+
+    Allow: Everyone 
+
+
+2. Retrieve a Specific Fruit (GET /fruits/<int:pk>/):
+
+    Allow: Everyone 
+
+
+3. Create a Fruit (POST /fruits/):
+
+    Allow: Everyone
+
+
+4. Update a Specific Fruit (PUT /fruits/<int:pk>/):
+
+    Allow:
+        Admin users can update any fruit.
+
+
+5. Delete a Specific Fruit (DELETE /fruits/<int:pk>/):
+
+    Allow:
+        Admin users can delete any fruit.
