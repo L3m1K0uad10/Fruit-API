@@ -29,6 +29,13 @@ class FruitSerializer(serializers.ModelSerializer):
             'image',
         ]
 
+    def validate(self, data):
+        # checking if a fruit with the same name already exists
+        fruit_name = data.get("name")
+        if Fruit.objects.filter(name__iexact = fruit_name).exists():
+            raise serializers.ValidationError({'name': f'A fruit with the name "{fruit_name}" already exists.'})
+        return data
+
     def create(self, validated_data):
         vitamins = validated_data.pop('vitamins', []) 
         fruit = Fruit.objects.create(**validated_data)
