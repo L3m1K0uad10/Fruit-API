@@ -5,11 +5,12 @@ from .managers import CustomUserManager
 
 
 class CustomUser(AbstractUser):
+    username = None
     email = models.EmailField(unique = True)
-    password = models.CharField(max_length = 128)
+    #password = models.CharField(max_length = 128)
 
     USERNAME_FIELD = "email"
-    REQUIRED_FIELDS = ["password"]
+    REQUIRED_FIELDS = []
 
     objects = CustomUserManager() 
     
